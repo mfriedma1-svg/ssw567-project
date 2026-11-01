@@ -33,7 +33,7 @@ def encode(type, country, lastname, name, passnumber, birthdate, sex, expiredate
     pass
 
 def accessData():
-        pass
+    pass
 
 def luhnalgorithm(inputs):
     def digits_of(n):
