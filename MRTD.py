@@ -33,4 +33,30 @@ def encode(f1, f2):
     pass
 
 def reportMismatch(checks, checkdigits):
-    pass
+    new_checks = []
+    # convert all checks to lists of numbers
+    for check in checks:
+        new_check = []
+        for char in check:
+            if char.isnumeric() == False:
+                char = (ord(char) - 64)
+            new_check.append(char)
+        new_check.append(new_check)
+
+    new_checkdigits = []
+    # run the luhn algorithm
+    for check in new_checks:
+        sum = 0
+        for number in check:
+            if number < 10:
+                sum += number
+            else:
+                sum += ((number // 10) + (number % 10))
+        new_checkdigits.append(sum % 10)
+
+    # compare each provided digit to the calculated one
+    i = 0
+    for digit in checkdigits:
+        if digit != new_checkdigits[i]:
+            print(f"Mismatch found! Expected {checkdigits[i]} but calculated {new_checkdigits[i]}")
+        i += 1
