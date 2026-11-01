@@ -71,13 +71,7 @@ def reportMismatch(checks, checkdigits):
     new_checkdigits = []
     # run the luhn algorithm
     for check in new_checks:
-        sum = 0
-        for number in check:
-            if number < 10:
-                sum += number
-            else:
-                sum += ((number // 10) + (number % 10))
-        new_checkdigits.append(sum % 10)
+        new_checkdigits.append(luhnalgorithm(check))
 
     # compare each provided digit to the calculated one
     i = 0
