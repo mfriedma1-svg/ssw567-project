@@ -1,4 +1,5 @@
 import unittest
+from unittest.mock import patch, MagicMock
 import MRTD
 
 class TestScanner(unittest.TestCase):
