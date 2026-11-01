@@ -3,6 +3,8 @@ from unittest.mock import patch, MagicMock
 import MRTD
 
 class TestScanner(unittest.TestCase):
+    @patch('MRTD.scanMRZ')
+    @patch('MRTD.accessData')
     def testMRZ(self):
         pass
 

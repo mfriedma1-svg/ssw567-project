@@ -30,9 +30,10 @@ def decode(s1, s2):
     return info
 
 def encode(type, country, lastname, name, passnumber, birthdate, sex, expiredate, personalnumber):
-    def scan():
-        pass
     pass
+
+def accessData():
+        pass
 
 def luhnalgorithm(inputs):
     def digits_of(n):
