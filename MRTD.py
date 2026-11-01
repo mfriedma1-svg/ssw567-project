@@ -30,8 +30,13 @@ def decode(s1, s2):
     return info
 
 def encode(info):
-    f1 = info["country"] + info["lastname"] + info["name"]
-    f2 = info["passnumber"] + info["country"] + info["birthdate"] + info["sex"] + info["expiredate"] + info["personalnumber"]
+    #run luhn algo with the values of passport num, bday, epxiry date, and personal num to get the 4 check digits, convert to string, and put the info together
+    cd1 = ""
+    cd2 = ""
+    cd3 = ""
+    cd4 = ""
+    f1 = info["country"] + info["lastname"] + "<<" + info["name"]
+    f2 = info["passnumber"] + cd1 + info["country"] + info["birthdate"] + cd2 + info["sex"] + info["expiredate"] + cd3 + info["personalnumber"] + "<<<<<<" + cd4
     return f1, f2
 
 def accessData():
