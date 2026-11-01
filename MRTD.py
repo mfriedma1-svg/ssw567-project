@@ -35,7 +35,7 @@ def encode(info):
     return f1, f2
 
 def accessData():
-        pass
+    pass
 
 def luhnalgorithm(inputs):
     def digits_of(n):
