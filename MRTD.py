@@ -10,7 +10,7 @@ def decode(s1, s2):
         "passnumber": "e",
         "birthdate": "f",
         "sex": "g",
-        "expirdate": "h",
+        "expiredate": "h",
         "personalnumber": "i"
     }
     # first string
@@ -21,15 +21,18 @@ def decode(s1, s2):
     info["passnumber"] = s2[0:9]
     info["birthdate"] = s2[13:19]
     info["sex"] = s2[20]
-    info["expirdate"] = s2[21:27]
+    info["expiredate"] = s2[21:27]
     info["personalnumber"] = s2[28:37]
-    checks = [info["passnumber"], info["birthdate"], info["expirdate"], info["personalnumber"]]
+    checks = [info["passnumber"], info["birthdate"], info["expiredate"], info["personalnumber"]]
     checkdigits = [s2[9], s2[19], s2[27], s2[43]]
 
     reportMismatch(checks, checkdigits)
     return info
 
-def encode(f1, f2):
+def encode(type, country, lastname, name, passnumber, birthdate, sex, expiredate, personalnumber):
+    def scan():
+        pass
+    
     pass
 
 def reportMismatch(checks, checkdigits):
