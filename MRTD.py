@@ -29,8 +29,10 @@ def decode(s1, s2):
     reportMismatch(checks, checkdigits)
     return info
 
-def encode(type, country, lastname, name, passnumber, birthdate, sex, expiredate, personalnumber):
-    pass
+def encode(info):
+    f1 = info["country"] + info["lastname"] + info["name"]
+    f2 = info["passnumber"] + info["country"] + info["birthdate"] + info["sex"] + info["expiredate"] + info["personalnumber"]
+    return f1, f2
 
 def accessData():
         pass
