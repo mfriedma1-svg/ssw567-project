@@ -1,38 +1,69 @@
-def scanMRZ():
+def scanMRZ(): #empty scan function
     pass
 
 def decode(s1, s2):
+
+    if len(s1) != 44 or len(s2) != 44:
+        raise ValueError("MRZ lines must be exactly 44 characters")
+
     info = {
-        "type": "a",
-        "country": "b",
-        "lastname": "c",
-        "name": "d",
-        "passnumber": "e",
-        "birthdate": "f",
-        "sex": "g",
-        "expiredate": "h",
-        "personalnumber": "i"
+        "type": "",
+        "country": "",
+        "lastname": "",
+        "name": "",
+        "passnumber": "",
+        "nationality": "",
+        "birthdate": "",
+        "sex": "",
+        "expiredate": "",
+        "personalnumber": ""
     }
-    # first string
-    info["type"] = s1[0]
+
+    #first line
+    info["type"] = s1[0:2]
     info["country"] = s1[2:5]
 
-    # second string
+    name = s1[5:44]
+    name_parts = name.split("<<", 1)
+
+    info["lastname"] = name_parts[0].replace("<", " ")
+
+    if len(name_parts) > 1:
+        info["name"] = name_parts[1].replace("<", " ").rstrip()
+
+    #second line
     info["passnumber"] = s2[0:9]
+    info["nationality"] = s2[10:13]
     info["birthdate"] = s2[13:19]
     info["sex"] = s2[20]
     info["expiredate"] = s2[21:27]
-    info["personalnumber"] = s2[28:37]
-    checks = [info["passnumber"], info["birthdate"], info["expiredate"], info["personalnumber"]]
-    checkdigits = [s2[9], s2[19], s2[27], s2[43]]
+    info["personalnumber"] = s2[28:42]
+
+    #check digits
+    checks = [
+        info["passnumber"],
+        info["birthdate"],
+        info["expiredate"],
+        info["personalnumber"]
+    ]
+
+    checkdigits = [
+        s2[9],
+        s2[19],
+        s2[27],
+        s2[42]
+    ]
+
+    composite_checkdigit = s2[43]
 
     reportMismatch(checks, checkdigits)
-    return info
+
+    return info, checkdigits, composite_checkdigit
 
 def encode(info):
 
     #first line
-    document_code = info.get("document_code", "PP")
+    document_code = info.get("document_code", "P<")
     issuer = info["country"].upper()
 
     if len(document_code) != 2 or document_code[0] != "P":
@@ -50,17 +81,17 @@ def encode(info):
 
     #second line
 
-    # Passport number
+    #passport number
     passport = format_passnumber(info["passnumber"])
     cd1 = luhnalgorithm(passport)
 
-    # Nationality
+    #nationality
     nationality = info.get("nationality", issuer).upper()
 
     if len(nationality) != 3 or not nationality.isascii() or not nationality.isalpha():
         raise ValueError("Nationality must be a 3-letter code")
 
-    # Birthdate
+    #birthdate
     birthdate = info["birthdate"]
 
     if len(birthdate) != 6 or not birthdate.isdigit():
@@ -68,13 +99,13 @@ def encode(info):
 
     cd2 = luhnalgorithm(birthdate)
 
-    # Sex
+    #sex
     sex = info["sex"].upper()
 
     if sex not in ("M", "F", "<"):
         raise ValueError("Sex must be M, F, or <")
 
-    # Expiration date
+    #expiry date
     expiredate = info["expiredate"]
 
     if len(expiredate) != 6 or not expiredate.isdigit():
@@ -82,7 +113,7 @@ def encode(info):
 
     cd3 = luhnalgorithm(expiredate)
 
-    # Personal number / optional data
+    #personal number
     personal = info.get("personalnumber", "").upper().replace(" ", "<")
 
     if any(
@@ -115,16 +146,16 @@ def encode(info):
 
     return line1, line2
 
-def generate_mrz(passport_id):
+def generate_mrz(id):
 
-    info = accessData(passport_id)
+    info = accessData(id)
 
     if info is None:
         raise ValueError("Passport information not found")
 
     return encode(info)
 
-def accessData(): #empty database access function
+def accessData(id): #empty database access function
     pass
 
 def mrz_value(char):
@@ -185,24 +216,11 @@ def format_name(lastname, firstname):
     return name.ljust(39, "<")
 
 def reportMismatch(checks, checkdigits):
-    new_checks = []
-    # convert all checks to lists of numbers
-    for check in checks:
-        new_check = []
-        for char in check:
-            if char.isnumeric() == False:
-                char = (ord(char) - 64)
-            new_check.append(char)
-        new_check.append(new_check)
-
     new_checkdigits = []
-    # run the luhn algorithm
-    for check in new_checks:
+    for check in checks:
         new_checkdigits.append(luhnalgorithm(check))
-
-    # compare each provided digit to the calculated one
-    i = 0
-    for digit in checkdigits:
-        if digit != new_checkdigits[i]:
+    for i in range(len(checkdigits)):
+        if checkdigits[i] != new_checkdigits[i]:
             print(f"Mismatch found! Expected {checkdigits[i]} but calculated {new_checkdigits[i]}")
-        i += 1
+            return False
+    return True
