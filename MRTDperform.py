@@ -2,7 +2,12 @@ import time
 import MRTD
 import json
 
-time.perf_counter()
+def time():
+    before = time.perf_counter()
+    # running program here
+    after = time.perf_counter()
+    final_time = after - before
+    print(f"Time taken: {final_time:0.4f} seconds")
 
 with open('records_decoded.json', 'r') as file:
     data = json.load(file)
