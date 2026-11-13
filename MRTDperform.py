@@ -2,16 +2,14 @@ import time
 import MRTD
 import json
 
-def time():
-    before = time.perf_counter()
-    # running program here
-    after = time.perf_counter()
-    final_time = after - before
-    print(f"Time taken: {final_time:0.4f} seconds")
-
 with open('records_decoded.json', 'r') as file:
     data = json.load(file)
 
+
+counter = 1
+times = []
+counters = [100, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000]
+start = time.perf_counter()
 for record in data['records_decoded']:
     info = {}
 
@@ -32,4 +30,11 @@ for record in data['records_decoded']:
     # the good part
     line1, line2 = MRTD.encode(info)
     result = line1 + ";" + line2
-    print(result)
+    if(counter == 100 or (counter % 1000 == 0)):
+       times.append(time.perf_counter())
+    counter += 1
+    print(counter)
+
+for i in range(len(times)):
+    time_elapsed = times[i] - start
+    print(f"Time to process {counters[i]} entries: {time_elapsed:0.4f} seconds.")
