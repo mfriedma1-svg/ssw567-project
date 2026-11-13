@@ -2,6 +2,8 @@ import time
 import MRTD
 import json
 
+time.perf_counter()
+
 with open('records_decoded.json', 'r') as file:
     data = json.load(file)
 
