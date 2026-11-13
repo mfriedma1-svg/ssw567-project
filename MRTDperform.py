@@ -31,10 +31,10 @@ for record in data['records_decoded']:
     line1, line2 = MRTD.encode(info)
     result = line1 + ";" + line2
     if(counter == 100 or (counter % 1000 == 0)):
-       times.append(time.perf_counter())
+       end = time.perf_counter()
+       time_elapsed = end - start
+       times.append(time_elapsed)
     counter += 1
-    print(counter)
 
 for i in range(len(times)):
-    time_elapsed = times[i] - start
     print(f"Time to process {counters[i]} entries: {time_elapsed:0.4f} seconds.")
