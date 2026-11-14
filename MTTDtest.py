@@ -26,7 +26,7 @@ class TestMRZ(unittest.TestCase):
         )
 
         expected_line2 = (
-            "L898902C36UTO7408122F1204159ZE184226B<<<<<10"
+            "L898902C36UTO7408122F1204159ZE184226B<<<<<<1"
         )
 
         self.assertEqual(line1, expected_line1)
@@ -41,7 +41,7 @@ class TestMRZ(unittest.TestCase):
     def test_decode(self): #testing the decode function
         line1, line2 = MRTD.encode(SAMPLE_INFO)
 
-        info, checkdigits, composite = MRTD.decode(line1, line2)
+        info, checkdigits = MRTD.decode(line1, line2)
 
         self.assertEqual(info["type"], "P<")
         self.assertEqual(info["country"], "UTO")
@@ -54,7 +54,6 @@ class TestMRZ(unittest.TestCase):
         self.assertEqual(info["expiredate"], "120415")
         self.assertEqual(info["personalnumber"], "ZE184226B<<<<<")
         self.assertEqual(checkdigits, ["6", "2", "9", "1"])
-        self.assertEqual(composite, "0")
 
     def test_reportMismatch_valid(self): #test for reportMismatch if there is no mismatch
         checks = [

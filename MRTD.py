@@ -51,14 +51,12 @@ def decode(s1, s2):
         s2[9],
         s2[19],
         s2[27],
-        s2[42]
+        s2[43]
     ]
-
-    composite_checkdigit = s2[43]
 
     reportMismatch(checks, checkdigits)
 
-    return info, checkdigits, composite_checkdigit
+    return info, checkdigits
 
 def encode(info):
 
@@ -122,10 +120,10 @@ def encode(info):
     ):
         raise ValueError("Invalid personal number characters")
 
-    personal = pad_field(personal, 14)
+    personal = pad_field(personal, 15)
     cd4 = luhnalgorithm(personal)
 
-    #create line 2 before composite check digit
+    #create line 2
     line2 = (
         passport + cd1 +
         nationality +
@@ -135,14 +133,7 @@ def encode(info):
         personal + cd4
     )
 
-    #composite check digit
-    cd5 = luhnalgorithm(
-        line2[0:10] +
-        line2[13:20] +
-        line2[21:43]
-    )
-
-    line2 += cd5
+   
 
     return line1, line2
 
