@@ -1,6 +1,6 @@
 import time
 import MRTD
-import MTTDtest
+import csv
 import json
 
 with open('records_decoded.json', 'r') as file:
@@ -55,7 +55,19 @@ times, lines = perform(False)
 times_test, lines = perform(True)
 counters = [100, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000]
 
-# csv creation goes here
+# csv creation
+headers = ["Records", "Lines", "Time (no test)", "Time (test)"]
+rows = [[], [], [], [], [], [], [], [], [], [], []]
+for i in range(len(counters)):
+    rows[i].append(counters[i])
+    rows[i].append(lines[i])
+    rows[i].append(times[i])
+    rows[i].append(times_test[i])
+
+with open('output.csv', mode='w', newline='', encoding='utf-8') as file:
+    writer = csv.writer(file)
+    writer.writerow(headers)
+    writer.writerows(rows)
 
 
 # modified function for the table
@@ -90,7 +102,8 @@ def perform_chart(is_test, type, count, data1 = data_en, data2 = data_de):
             if(counter == count):
                 end = time.perf_counter()
                 time_elapsed = end - start
-                return (time_elapsed / count)
+                result = 1000 * time_elapsed / count
+                return (f"{result:.3f}")
             counter += 1
 
     elif type == "decode":
@@ -112,7 +125,8 @@ def perform_chart(is_test, type, count, data1 = data_en, data2 = data_de):
             if(counter == count):
                 end = time.perf_counter()
                 time_elapsed = end - start
-                return (time_elapsed / count)
+                result = 1000 * time_elapsed / count
+                return (f"{result:.3f}")
             counter += 1
 
 # table part
