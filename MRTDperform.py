@@ -9,11 +9,13 @@ with open('records_decoded.json', 'r') as file:
 with open('records_encoded.json', 'r') as file:
     data_de = json.load(file)
 
-def perform(data, is_test):
+def perform(is_test, data1 = data_en, data2 = data_de):
     start = time.perf_counter()
     counter = 1
     times = []
-    for record in data['records_decoded']:
+    line_count = 2
+    lines = []
+    for record in data1['records_decoded']:
         info = {}
 
         # line 1
@@ -31,33 +33,37 @@ def perform(data, is_test):
         info['personalnumber'] = record['line2']['personal_number']
 
         # the good part
+        line1, line2 = MRTD.encode(info)
+        result = line1 + ";" + line2
         if is_test == True:
-            # test stuff
-            pass
-        else:
-            line1, line2 = MRTD.encode(info)
-            result = line1 + ";" + line2
+            assert len(line1) == 44
+            assert len(line2) == 44
+            assert result == data2['records_encoded'][counter-1]
 
+        line_count += 15
+        if(counter == 10000):
+            line_count += 2
         if(counter == 100 or (counter % 1000 == 0)):
             end = time.perf_counter()
             time_elapsed = end - start
             times.append(time_elapsed)
+            lines.append(line_count)
         counter += 1
-    return times
+    return times, lines
 
-times = perform(data_en, False)
-times_test = perform(data_en, True)
+times, lines = perform(False)
+times_test, lines = perform(True)
 counters = [100, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000]
 
 # csv creation goes here
 
 
 # modified function for the table
-def perform_chart(data, is_test, type, count):
+def perform_chart(is_test, type, count, data1 = data_en, data2 = data_de):
     start = time.perf_counter()
     counter = 1
     if type == "encode":
-        for record in data['records_decoded']:
+        for record in data1['records_decoded']:
             info = {}
 
             # line 1
@@ -74,34 +80,47 @@ def perform_chart(data, is_test, type, count):
             info['expiredate'] = record['line2']['expiration_date']
             info['personalnumber'] = record['line2']['personal_number']
 
+            line1, line2 = MRTD.encode(info)
+            result = line1 + ";" + line2
             if is_test == True:
-                # test stuff
-                pass
-            else:
-                line1, line2 = MRTD.encode(info)
-                result = line1 + ";" + line2
+                assert len(line1) == 44
+                assert len(line2) == 44
+                assert result == data2['records_encoded'][counter-1]
+
+            if(counter == count):
+                end = time.perf_counter()
+                time_elapsed = end - start
+                return (time_elapsed / count)
+            counter += 1
 
     elif type == "decode":
-        for record in data['records_encoded']:
+        for record in data2['records_encoded']:
             lines = record.split(";")
 
+            info, checkdigits = MRTD.decode(lines[0], lines[1])
             if is_test == True:
-                # test stuff
-                pass
-            else:
-                info, checkdigits = MRTD.decode(lines[0], lines[1])
-            
-    if(counter == count):
-        end = time.perf_counter()
-        time_elapsed = end - start
-        return (time_elapsed / count)
-    counter += 1
+                assert info['country'] == data1['records_decoded'][counter-1]['line1']['issuing_country']
+                assert info['lastname'] == data1['records_decoded'][counter-1]['line1']['last_name']
+                assert info['name'] == data1['records_decoded'][counter-1]['line1']['given_name']
+                assert info['birthdate'] == data1['records_decoded'][counter-1]['line2']['birth_date']
+                assert info['nationality'] == data1['records_decoded'][counter-1]['line2']['country_code']
+                assert info['passnumber'] == data1['records_decoded'][counter-1]['line2']['passport_number']
+                assert info['sex'] == data1['records_decoded'][counter-1]['line2']['sex']
+                assert info['expiredate'] == data1['records_decoded'][counter-1]['line2']['expiration_date']
+                assert info['personalnumber'] == data1['records_decoded'][counter-1]['line2']['personal_number']
+
+            if(counter == count):
+                end = time.perf_counter()
+                time_elapsed = end - start
+                return (time_elapsed / count)
+            counter += 1
 
 # table part
 inputs = [10, 100, 1000, 10000]
-'''for i in inputs:
-    a = perform_chart(data_en, True, "encode", i)
-    b = perform_chart(data_en, False, "encode", i)
-    c = perform_chart(data_de, True, "decode", i)
-    d = perform_chart(data_de, False, "decode", i)
-    result = [a, b, c, d]'''
+for i in inputs:
+    a = perform_chart(True, "encode", i)
+    b = perform_chart(False, "encode", i)
+    c = perform_chart(True, "decode", i)
+    d = perform_chart(False, "decode", i)
+    result = [a, b, c, d]
+    print(result)

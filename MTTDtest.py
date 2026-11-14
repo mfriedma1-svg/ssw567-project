@@ -52,7 +52,7 @@ class TestMRZ(unittest.TestCase):
         self.assertEqual(info["birthdate"], "740812")
         self.assertEqual(info["sex"], "F")
         self.assertEqual(info["expiredate"], "120415")
-        self.assertEqual(info["personalnumber"], "ZE184226B<<<<<")
+        self.assertEqual(info["personalnumber"], "ZE184226B")
         self.assertEqual(checkdigits, ["6", "2", "9", "1"])
 
     def test_reportMismatch_valid(self): #test for reportMismatch if there is no mismatch

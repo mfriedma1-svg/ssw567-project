@@ -37,7 +37,7 @@ def decode(s1, s2):
     info["birthdate"] = s2[13:19]
     info["sex"] = s2[20]
     info["expiredate"] = s2[21:27]
-    info["personalnumber"] = s2[28:42]
+    info["personalnumber"] = s2[28:42].replace("<", "")
 
     #check digits
     checks = [
